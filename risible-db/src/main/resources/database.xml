@@ -1,0 +1,64 @@
+<!-- 
+ Copyright 2008 Conan Dalton and Jean-Philippe Hallot
+ 
+ This file is part of risible-db.
+ 
+ risible-db is free software: you can redistribute it and/or modify
+ it under the terms of version 3 of the GNU Lesser General Public License as published by
+ the Free Software Foundation
+ 
+ risible-db is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ Copies of the GNU General Public License and the GNU Lesser General Public License
+ are distributed with this software, see /GPL.txt and /LGPL.txt at the
+ root of this distribution.
+-->
+
+<project name="risible-db-database-build" default="db.build" basedir=".">
+  <description>Risible DB - database build</description>
+
+  <property name="lib" value="lib"/>
+  <property name="src.java" value="src/java"/>
+  <property name="src.test" value="src/test"/>
+
+  <property name="build" value="ant-build"/>
+  <property name="classes" value="${build}/classes"/>
+  <property name="test.classes" value="${build}/test-classes"/>
+  <property name="dist" value="${build}/dist"/>
+
+  <property file="${src.test}/environment/${developper}/${configName}.properties" />
+
+  <path id="ref-jars">
+    <fileset dir="${lib}/reference">
+      <include name="**/*.jar"/>
+      <exclude name="src/**/*"/>
+    </fileset>
+  </path>
+
+  <target name="db.build">
+    <sql driver="${datasource.driver}" password="${datasource.admin.password}" userid="${datasource.admin.user}" url="${datasource.url}" onerror="continue">
+      <classpath refid="ref-jars"/>
+      <fileset file="${datasource.build.location}/setup_users.sql"/>
+    </sql>
+    <sql driver="${datasource.driver}" password="${datasource.1.password}" userid="${datasource.1.user}" url="${datasource.1.url}" onerror="continue">
+      <classpath refid="ref-jars"/>
+      <fileset file="${datasource.build.location}/risibleTest1.sql"/>
+    </sql>
+    <sql driver="${datasource.driver}" password="${datasource.2.password}" userid="${datasource.2.user}" url="${datasource.2.url}" onerror="continue">
+      <classpath refid="ref-jars"/>
+      <fileset file="${datasource.build.location}/risibleTest2.sql"/>
+    </sql>
+    <sql driver="${datasource.driver}" password="${datasource.3.password}" userid="${datasource.3.user}" url="${datasource.3.url}" onerror="continue">
+      <classpath refid="ref-jars"/>
+      <fileset file="${datasource.build.location}/risibleTest3.sql"/>
+    </sql>
+    <sql driver="${datasource.driver}" password="${datasource.4.password}" userid="${datasource.4.user}" url="${datasource.4.url}" onerror="continue">
+      <classpath refid="ref-jars"/>
+      <fileset file="${datasource.build.location}/risibleTest4.sql"/>
+    </sql>
+  </target>
+
+</project>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    <bean id="freemarkerConfiguration" class="freemarker.template.Configuration" scope="prototype">
+        <property name="templateLoader">
+            <bean class="risible.freemarker.ClasspathTemplateLoader"/>
+        </property>
+        <property name="tagSyntax" value="2"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="ObjectWrapper">
+            <bean class="risible.freemarker.SeriousBeanModelObjectWrapper"/>
+        </property>
+    </bean>
+
+    <bean id="freemarkerRenderer" class="risible.freemarker.FreemarkerRenderer">
+        <property name="freemarkerConfiguration" ref="freemarkerConfiguration"/>
+    </bean>
+
+    <bean id="jsonRenderer" class="risible.json.JsonRenderer"/>
+
+    <bean id="typeConverter" class="risible.demo.app.TypeConverter"/>
+
+    <bean id="defaultActionInvoker" class="risible.core.dispatch.DataBindingActionInvoker">
+        <property name="typeConverter" ref="typeConverter"/>
+    </bean>
+
+    <bean id="filter" class="risible.core.dispatch.Filter">
+        <property name="actionPackage" value="risible.demo.app.controller"/>
+        <property name="renderers">
+            <list>
+                <ref bean="freemarkerRenderer"/>
+                <ref bean="jsonRenderer"/>
+            </list>
+        </property>
+        <property name="extensions">
+            <list>
+                <value>.html</value>
+                <value>.ajax</value>
+            </list>
+        </property>
+        <property name="actionInvokers">
+            <map>
+                <entry key="default" value-ref="defaultActionInvoker"/>
+            </map>
+        </property>
+    </bean>
+</beans>

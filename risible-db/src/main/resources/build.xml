@@ -1,0 +1,123 @@
+<!-- 
+ Copyright 2008 Conan Dalton and Jean-Philippe Hallot
+ 
+ This file is part of risible-db.
+ 
+ risible-db is free software: you can redistribute it and/or modify
+ it under the terms of version 3 of the GNU Lesser General Public License as published by
+ the Free Software Foundation
+ 
+ risible-db is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ Copies of the GNU General Public License and the GNU Lesser General Public License
+ are distributed with this software, see /GPL.txt and /LGPL.txt at the
+ root of this distribution.
+-->
+
+<project name="risible-db" default="dist" basedir=".">
+  <description>Risible DB</description>
+
+  <property name="lib" value="lib"/>
+  <property name="src.java" value="src/java"/>
+  <property name="src.test" value="src/test"/>
+
+  <property name="build" value="ant-build"/>
+  <property name="classes" value="${build}/classes"/>
+  <property name="test.classes" value="${build}/test-classes"/>
+  <property name="dist" value="${build}/dist"/>
+  <property name="intelliJClasses" value="out/production/risible-db"/>
+
+  <path id="all-jars">
+    <fileset dir="${lib}/shipped">
+      <include name="**/*.jar"/>
+      <exclude name="src/**/*"/>
+    </fileset>
+    <fileset dir="${lib}/reference">
+      <include name="**/*.jar"/>
+      <exclude name="src/**/*"/>
+    </fileset>
+  </path>
+
+  <path id="classpath-for-running-tests">
+    <path location="${classes}"/>
+    <path location="${test.classes}"/>
+    <path refid="all-jars"/>
+  </path>
+
+  <path id="classpath-for-taskdef">
+    <path location="${intelliJClasses}"/>
+    <path refid="all-jars"/>
+  </path>
+
+  <target name="dist" depends="jar, zip-src" description="zip source, build binary jar"/>
+
+  <!--
+  <taskdef name="migrate" classname="risible.db.MigrationTask" classpathref="classpath-for-taskdef"/>
+
+  <target name="migrateDb">
+    <migrate user="root" password="" jdbcDriver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/test"
+             path="db_upgrade/2.x/" tableName="newMigrationTbl" migrationDriver="risible.db.MySqlMigrationTable"/>
+  </target>
+  -->
+
+  <target name="zip-src">
+    <zip file="${dist}/${ant.project.name}-src.zip">
+      <fileset dir=".">
+        <exclude name="tmp/**"/>
+        <exclude name="build/**"/>
+        <exclude name="ant-build/**"/>
+        <exclude name="dist/**"/>
+        <exclude name="out/**"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="${classes}"/>
+    <mkdir dir="${test.classes}"/>
+    <javac srcdir="${src.java}" destdir="${classes}" classpathref="all-jars" debug="on" source="1.5"
+           target="1.5"/>
+    <copy todir="${classes}">
+      <fileset dir="${src.java}">
+        <include name="**/*"/>
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+    <javac srcdir="${src.test}" destdir="${test.classes}" classpathref="all-jars" debug="on"
+           source="1.5" target="1.5">
+      <classpath location="${classes}"/>
+    </javac>
+    <copy todir="${test.classes}">
+      <fileset dir="${src.test}">
+        <include name="**/*"/>
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="test" depends="compile" description="Run all the tests">
+    <property name="configName" value="test_mysql"/>
+    <ant antfile="database.xml" target="db.build">
+      <property name="configName" value="${configName}"/>
+    </ant>
+    <junit dir="." printsummary="true" showoutput="true" fork="true" forkmode="once" haltonerror="true"
+           haltonfailure="true">
+      <jvmarg line="-Xmx512m"/>
+      <jvmarg line="-DconfigName=${configName}"/>
+      <classpath refid="classpath-for-running-tests"/>
+      <test name="risible.AllTests"/>
+    </junit>
+  </target>
+
+  <target name="jar" depends="test" description="build the binary jar file">
+    <mkdir dir="${dist}"/>
+    <jar file="${dist}/${ant.project.name}.jar" basedir="${classes}"/>
+  </target>
+</project>

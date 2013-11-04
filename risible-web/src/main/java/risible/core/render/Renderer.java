@@ -1,0 +1,32 @@
+// Copyright 2008 Conan Dalton and Jean-Philippe Hallot
+//
+// This file is part of risible-web.
+//
+// risible-web is free software: you can redistribute it and/or modify
+// it under the terms of version 3 of the GNU Lesser General Public License as published by
+// the Free Software Foundation
+//
+// risible-db is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Copies of the GNU General Public License and the GNU Lesser General Public License
+// are distributed with this software, see /GPL.txt and /LGPL.txt at the
+// root of this distribution.
+//
+
+package risible.core.render;
+
+import freemarker.template.TemplateException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+
+public interface Renderer {
+    void renderResult(HttpServletRequest req, HttpServletResponse res, Object controller, String action, Object result) throws Exception;
+
+    void renderException(HttpServletRequest req, HttpServletResponse res, Object controller, String action, Throwable throwable) throws Exception;
+}

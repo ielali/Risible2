@@ -1,0 +1,2 @@
+toto : select * from toto;
+toto : select * from titi t where t.id in (select * from tti_baseline);

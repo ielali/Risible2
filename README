@@ -1,0 +1,18 @@
+Risible2
+========
+
+A simple MVC Framework that uses convention over configuration. Main featuers :
+
+-Freemarker templating
+
+-Json rendering with Gson
+
+-Data binding with Ognl
+
+-Simple rules to map URL to controller and rendering view
+
+Repositry features a small demo app.
+
+Original Project can be found at the following location : http://sourceforge.net/projects/risible/
+
+This file was modified by IntelliJ IDEA 12.1.6 for binding GitHub repository

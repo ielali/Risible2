@@ -18,15 +18,6 @@
 
 package risible.core.render;
 
-import freemarker.template.TemplateException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.Writer;
-
 public interface Renderer {
-    void renderResult(HttpServletRequest req, HttpServletResponse res, Object controller, String action, Object result) throws Exception;
-
-    void renderException(HttpServletRequest req, HttpServletResponse res, Object controller, String action, Throwable throwable) throws Exception;
+    void render(RendererContext context) throws Exception;
 }

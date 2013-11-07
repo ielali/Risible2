@@ -44,30 +44,35 @@ public class ExceptionTemplateNameGeneratorTest {
         assertEquals("risible/core/foo/ControllerForTesting-ControllerExceptionSubclassForTesting.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/ControllerExceptionSubclassForTesting.ftl", i.next());
         assertEquals("risible/core/foo/ControllerExceptionSubclassForTesting.ftl", i.next());
+        assertEquals("ControllerExceptionSubclassForTesting.ftl", i.next());
 
         assertEquals("risible/core/foo/ControllerForTesting-doit-ControllerExceptionForTesting.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/doit-ControllerExceptionForTesting.ftl", i.next());
         assertEquals("risible/core/foo/ControllerForTesting-ControllerExceptionForTesting.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/ControllerExceptionForTesting.ftl", i.next());
         assertEquals("risible/core/foo/ControllerExceptionForTesting.ftl", i.next());
+        assertEquals("ControllerExceptionForTesting.ftl", i.next());
 
         assertEquals("risible/core/foo/ControllerForTesting-doit-Exception.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/doit-Exception.ftl", i.next());
         assertEquals("risible/core/foo/ControllerForTesting-Exception.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/Exception.ftl", i.next());
         assertEquals("risible/core/foo/Exception.ftl", i.next());
+        assertEquals("Exception.ftl", i.next());
 
         assertEquals("risible/core/foo/ControllerForTesting-doit-Throwable.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/doit-Throwable.ftl", i.next());
         assertEquals("risible/core/foo/ControllerForTesting-Throwable.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/Throwable.ftl", i.next());
         assertEquals("risible/core/foo/Throwable.ftl", i.next());
+        assertEquals("Throwable.ftl", i.next());
 
         assertEquals("risible/core/foo/ControllerForTesting-doit-Object.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/doit-Object.ftl", i.next());
         assertEquals("risible/core/foo/ControllerForTesting-Object.ftl", i.next());
         assertEquals("risible/core/foo/controllerForTesting/Object.ftl", i.next());
         assertEquals("risible/core/foo/Object.ftl", i.next());
+        assertEquals("Object.ftl", i.next());
         Assert.assertFalse(i.hasNext());
     }
 

@@ -19,12 +19,11 @@
 package risible.core.log;
 
 import org.apache.log4j.Logger;
-import risible.core.dispatch.Filter;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class Log4jRequestLogger extends RequestLoggerSupport {
-    private static final Logger log = Logger.getLogger(Filter.class);
+    private static final Logger log = Logger.getLogger(Log4jRequestLogger.class);
 
     public void ignored(HttpServletRequest req, long elapsed) {
     }

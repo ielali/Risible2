@@ -23,7 +23,6 @@ import ognl.Ognl;
 import ognl.OgnlContext;
 import org.junit.Assert;
 import org.junit.Test;
-import risible.core.dispatch.Filter;
 import risible.core.objects.ComplexControllerForTesting;
 import risible.core.objects.TypeConverterForTesting;
 
@@ -31,7 +30,6 @@ public class TypeConverterTest extends TestableFilter {
 
     @Test
     public void testOgnlRetrievesComplexValues() throws Exception {
-        prepare(new Filter());
         ComplexControllerForTesting controller = new ComplexControllerForTesting();
         OgnlContext context = new OgnlContext();
         context.setTypeConverter(new TypeConverterForTesting());
@@ -41,7 +39,6 @@ public class TypeConverterTest extends TestableFilter {
 
     @Test
     public void testOgnlRetrievesComplexValuesInArray() throws Exception {
-        prepare(new Filter());
         ComplexControllerForTesting controller = new ComplexControllerForTesting();
         OgnlContext context = new OgnlContext();
         context.setTypeConverter(new TypeConverterForTesting());
@@ -53,7 +50,6 @@ public class TypeConverterTest extends TestableFilter {
 
     @Test
     public void testOgnlRetrievesAnArrayIndexedByStringWithoutTypeConverssion() throws Exception {
-        prepare(new Filter());
         ComplexControllerForTesting controller = new ComplexControllerForTesting();
         OgnlContext context = new OgnlContext();
         context.setTypeConverter(new TypeConverterForTesting());

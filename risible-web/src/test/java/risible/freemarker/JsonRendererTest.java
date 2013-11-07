@@ -18,79 +18,43 @@
 
 package risible.freemarker;
 
-import freemarker.template.TemplateException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import risible.core.foo.ControllerExceptionSubclassForTesting;
 import risible.core.foo.ControllerForTesting;
+import risible.core.render.RendererContext;
 import risible.json.JsonRenderer;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 
 public class JsonRendererTest {
-    private HttpServletResponse res;
-    private HttpServletRequest req;
-    private ByteArrayOutputStream responseByteStream;
     private JsonRenderer renderer;
 
     @Before
     public void setUp() throws Exception {
-        req = Mockito.mock(HttpServletRequest.class);
-        res = Mockito.mock(HttpServletResponse.class);
-        when(req.getParameterMap()).thenReturn(new HashMap());
-        when(req.getRequestURL()).thenReturn(new StringBuffer());
-        when(req.getRequestURI()).thenReturn("/");
-        responseByteStream = new ByteArrayOutputStream();
-        PrintStream responsePrintStream = new PrintStream(responseByteStream);
-        when(res.getOutputStream()).thenReturn(new ServletOutputStream() {
-            @Override
-            public void write(int i) throws IOException {
-                responseByteStream.write(i);
-            }
-
-            public void write(byte[] bytes) throws IOException {
-                responseByteStream
-                        .write(bytes);
-            }
-
-            public void write(byte[] bytes, int i, int i1) throws IOException {
-                responseByteStream.write(bytes, i, i1);
-            }
-
-            public void flush() throws IOException {
-                responseByteStream.flush();
-            }
-
-            public void close() throws IOException {
-                responseByteStream.close();
-            }
-        }
-        );
         renderer = new JsonRenderer();
         renderer.afterPropertiesSet();
     }
 
     @Test
     public void testRendererIncludesParsedFiles() throws Exception {
+        StringWriter writer = new StringWriter();
         ControllerForTesting controller = new ControllerForTesting();
-        renderer.renderResult(req, res, controller, "processBean", controller.processBean());
-        assertEquals("{\"firstName\":\"John\",\"lastName\":\"Smith\"}", responseByteStream.toString());
+        RendererContext context = new RendererContext(controller, "processBean", controller.processBean(), null, new HashMap<String, Object>(), writer);
+        renderer.render(context);
+        assertEquals("{\"firstName\":\"John\",\"lastName\":\"Smith\"}", writer.toString());
     }
 
     @Test
     public void testRendererFindsTemplateForExceptionSuperclass() throws Exception {
-        renderer.renderException(req, res, new ControllerForTesting(), "processBean", new ControllerExceptionSubclassForTesting("Message",new RuntimeException("test")));
-        assertEquals("{\"detailMessage\":\"Message\",\"cause\":{\"cause\":\"null\",\"message\":\"test\"}}", responseByteStream.toString());
+        StringWriter writer = new StringWriter();
+        ControllerForTesting controller = new ControllerForTesting();
+        RendererContext context = new RendererContext(controller, "processBean", null, new ControllerExceptionSubclassForTesting("Message", new RuntimeException("test")), new HashMap<String, Object>(), writer);
+        renderer.render(context);
+        assertEquals("{\"detailMessage\":\"Message\",\"cause\":{\"cause\":\"null\",\"message\":\"test\"},\"stackTrace\":[],\"suppressedExceptions\":[]}", writer.toString());
     }
 }

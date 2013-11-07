@@ -23,7 +23,18 @@ public class InvocationFailed extends Exception {
         super(targetException);
     }
 
+    public InvocationFailed(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
     public InvocationFailed(String message) {
         super(message);
+    }
+
+    public InvocationFailed(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvocationFailed() {
     }
 }

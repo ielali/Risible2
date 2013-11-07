@@ -19,7 +19,6 @@
 package risible.core.render;
 
 import org.apache.commons.lang.StringUtils;
-import risible.core.render.MissingTemplate;
 
 import java.util.Iterator;
 
@@ -31,8 +30,8 @@ public abstract class TemplateNameGenerator implements Iterator {
     protected String action;
 
     public TemplateNameGenerator(Class controller, String action) {
-        this.packageName = controller.getPackage().getName().replace('.', '/');
-        this.controller = controller.getSimpleName();
+        this.packageName = controller != null ? controller.getPackage().getName().replace('.', '/') : "";
+        this.controller = controller != null ? controller.getSimpleName() : "";
         this.action = action;
     }
 

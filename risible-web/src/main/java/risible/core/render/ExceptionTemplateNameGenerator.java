@@ -28,7 +28,7 @@ public class ExceptionTemplateNameGenerator extends TemplateNameGenerator {
     int step = 0;
 
     public static String lookup(Throwable exception, Class controller, String action) {
-        String key = controller.getName() + "-" + action + "-" + exception.getClass().getName();
+        String key = (controller != null ? controller.getName() : "ALL") + "-" + action + "-" + exception.getClass().getName();
         String templateName = cache.get(key);
         if (templateName == null) {
             templateName = new ExceptionTemplateNameGenerator(exception, controller, action).getTemplateName();
@@ -72,9 +72,12 @@ public class ExceptionTemplateNameGenerator extends TemplateNameGenerator {
                 break;
             case 4:
                 name = packageName + "/" + exceptionClassName + EXTENSION;
+                break;
+            case 5:
+                name = exceptionClassName + EXTENSION;
         }
         step++;
-        step %= 5;
+        step %= 6;
         return name;
     }
 

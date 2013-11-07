@@ -18,7 +18,7 @@
 
 package risible.core.dispatch;
 
-public class NotFound extends RuntimeException {
+public class NotFound extends InvocationFailed {
     public NotFound() {
     }
 

@@ -138,9 +138,6 @@ public class DataBindingActionInvoker implements Invoker {
         } catch (OgnlException e) {
             Throwable cause = e.getReason();
             if (cause != null) {
-                if (cause instanceof NotFound) {
-                    throw (NotFound) cause;
-                }
                 throw new RuntimeException("Setting " + propertyName + " to " + stringify(value), cause);
             }
             throw new RuntimeException("Setting '" + propertyName + "' to " + stringify(value), e);

@@ -18,24 +18,16 @@
 
 package risible.core;
 
-import freemarker.template.TemplateException;
 import org.junit.Before;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import risible.core.dispatch.Filter;
 import risible.core.dispatch.Invoker;
 import risible.core.log.RequestLogger;
-import risible.core.render.Renderer;
-import risible.freemarker.FreemarkerRendererMother;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,20 +61,6 @@ public class TestableFilter {
 
         invoker = mock(Invoker.class);
         otherInvoker = mock(Invoker.class);
-    }
-
-    protected Filter prepare(Filter filter) throws TemplateException, IOException, NoSuchMethodException, ServletException {
-        filter.setApplicationContext((ApplicationContext) appContext);
-        filter.setActionPackage(getClass().getPackage().getName());
-        Map invokers = new HashMap();
-        invokers.put("default", invoker);
-        invokers.put("other", otherInvoker);
-        filter.setActionInvokers(invokers);
-        ArrayList<Renderer> renderers = new ArrayList<Renderer>(1);
-        renderers.add(FreemarkerRendererMother.create());
-        filter.setRenderers(renderers);
-        filter.setLogger(new NullRequestLogger());
-        return filter;
     }
 
     private static class NullRequestLogger implements RequestLogger {

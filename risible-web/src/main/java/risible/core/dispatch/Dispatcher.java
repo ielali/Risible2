@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import risible.core.MediaType;
+import risible.core.annotations.ModelParam;
 import risible.core.annotations.UsesInvoker;
 
 import java.lang.reflect.Method;
@@ -62,7 +63,7 @@ public class Dispatcher implements ApplicationContextAware {
             throwable = e;
         }
 
-        return new DispatcherResult(controller, actionName, result, mediaType, throwable);
+        return new DispatcherResult(controller, actionName, result, context.getParameters().get(ModelParam.class), mediaType, throwable);
     }
 
     private Invocation createInvocation(DispatcherContext context) throws InvocationFailed {

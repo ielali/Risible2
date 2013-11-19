@@ -21,6 +21,7 @@ package risible.core.dispatch;
 import ognl.*;
 import org.apache.commons.lang.StringUtils;
 import risible.core.annotations.HeaderParam;
+import risible.core.annotations.ModelParam;
 import risible.core.annotations.PathParam;
 import risible.core.annotations.QueryParam;
 import risible.util.ClassUtils;
@@ -28,17 +29,14 @@ import risible.util.ClassUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 
 public class DataBindingActionInvoker implements Invoker {
     private risible.core.TypeConverter typeConverter;
 
     @Override
-    public Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed {
+    public Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed, InstantiationException {
         dataBindControllerFields(controller, invocation, parameters);
         Object[] args = dataBindMethodParams(invocation, parameters);
         try {
@@ -66,7 +64,7 @@ public class DataBindingActionInvoker implements Invoker {
                 populate(controller, field.getName(), headerParameters.get(headerParamName));
             }
             QueryParam queryParam = field.getAnnotation(QueryParam.class);
-            TreeMap requestParameters = parameters.get(QueryParam.class);
+            TreeMap<String, Object> requestParameters = parameters.get(QueryParam.class);
             if (queryParam != null) {
                 String requestParamName = StringUtils.isNotBlank(queryParam.value()) ? queryParam.value() : field.getName();
                 if (requestParamName != null && requestParamName.trim() != "") {
@@ -85,7 +83,7 @@ public class DataBindingActionInvoker implements Invoker {
         }
     }
 
-    private Object[] dataBindMethodParams(Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) {
+    private Object[] dataBindMethodParams(Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InstantiationException {
         Class[] types = invocation.getActionMethod().getParameterTypes();
         Object[] result = new Object[types.length];
         if (types.length > 0) {
@@ -108,7 +106,7 @@ public class DataBindingActionInvoker implements Invoker {
                     }
                 }
                 QueryParam queryParam = ClassUtils.getAnnotation(paramAnnotations[i], QueryParam.class);
-                TreeMap requestParameters = parameters.get(QueryParam.class);
+                TreeMap<String, Object> requestParameters = parameters.get(QueryParam.class);
                 if (queryParam != null) {
                     String requestParamName = queryParam.value();
                     if (requestParamName != null && requestParamName.trim() != "") {
@@ -125,6 +123,16 @@ public class DataBindingActionInvoker implements Invoker {
                             }
                         }
                     }
+                }
+                ModelParam modelParam = ClassUtils.getAnnotation(paramAnnotations[i], ModelParam.class);
+                TreeMap<String, Object> modelParameters = parameters.get(ModelParam.class);
+                if (modelParameters == null) {
+                    modelParameters = new TreeMap<String, Object>();
+                    parameters.put(ModelParam.class, modelParameters);
+                }
+                if (modelParam != null && Map.class.isAssignableFrom(types[i])) {
+                    result[i] = types[i].isInterface() ? new HashMap() : types[i].newInstance();
+                    modelParameters.put(modelParam.value(), result[i]);
                 }
             }
         }

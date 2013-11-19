@@ -34,7 +34,7 @@ import java.util.TreeMap;
 
 public class DefaultActionInvokerTest extends TestCase {
 
-    public void testInvokerSetsParametersAndInvokesMethod() throws IllegalAccessException, InvocationFailed {
+    public void testInvokerSetsParametersAndInvokesMethod() throws Exception {
         DataBindingActionInvoker invoker = new DataBindingActionInvoker();
         invoker.setTypeConverter(new TypeConverter());
         TreeMap<String, Object> params = new TreeMap<String, Object>();

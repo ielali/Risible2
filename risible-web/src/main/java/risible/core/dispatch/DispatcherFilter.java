@@ -144,6 +144,9 @@ public class DispatcherFilter implements javax.servlet.Filter {
         context.put("userAgent", new UserAgent(request));
         context.put("session", new SessionMap(request));
         context.put("cookies", new CookieManager(request, response));
+        for (String key : result.getModelParameters().keySet()) {
+            context.put(key, result.getModelParameters().get(key));
+        }
         if (result.getThrowable() != null) {
             context.put("error", result.getThrowable());
         }

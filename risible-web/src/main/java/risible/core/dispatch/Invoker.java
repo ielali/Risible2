@@ -24,5 +24,5 @@ import java.util.TreeMap;
 
 public interface Invoker {
 
-    Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed;
+    Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed, InstantiationException;
 }

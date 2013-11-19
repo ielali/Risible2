@@ -23,7 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 public class NoDotDispatchingStrategy implements DispatchingStrategy {
     public boolean shouldDispatch(HttpServletRequest req) {
         String servletPath = req.getServletPath();
-        return !((servletPath.contains(".") || "/".equals(servletPath) || servletPath.length() == 0));
+        return !((servletPath.contains(".") || "/".equals(servletPath) || servletPath.length() == 0))
+                || (servletPath.contains(".ajax"));
     }
 
 }

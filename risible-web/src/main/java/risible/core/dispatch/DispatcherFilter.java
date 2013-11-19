@@ -22,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import risible.core.MediaType;
 import risible.core.UserAgent;
+import risible.core.annotations.HeaderParam;
+import risible.core.annotations.QueryParam;
 import risible.core.annotations.Renders;
 import risible.core.log.Log4jRequestLogger;
 import risible.core.log.RequestLogger;
@@ -36,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 public class DispatcherFilter implements javax.servlet.Filter {
@@ -44,8 +47,6 @@ public class DispatcherFilter implements javax.servlet.Filter {
     private Dispatcher dispatcher;
     private RequestLogger logger = new Log4jRequestLogger();
     private Map<MediaType, Renderer> rendererPerMediaType = new Hashtable<MediaType, Renderer>();
-    private List<String> extensions = Arrays.asList(".do", ".ajax");
-    private DispatchingStrategy dispatchingStrategy = new ExtensionDispatchingStrategy(extensions);
 
     public DispatcherFilter() throws IOException {
     }
@@ -73,18 +74,8 @@ public class DispatcherFilter implements javax.servlet.Filter {
         }
     }
 
-    public void setExtensions(List<String> extensions) {
-        this.extensions = extensions;
-        dispatchingStrategy = new ExtensionDispatchingStrategy(this.extensions);
-    }
-
     public void setLogger(RequestLogger logger) {
         this.logger = logger;
-    }
-
-
-    public void setDispatchingStrategy(DispatchingStrategy dispatchingStrategy) {
-        this.dispatchingStrategy = dispatchingStrategy;
     }
 
 
@@ -95,11 +86,7 @@ public class DispatcherFilter implements javax.servlet.Filter {
         long now = System.currentTimeMillis();
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse res = (HttpServletResponse) servletResponse;
-        if (dispatchingStrategy.shouldDispatch(req)) {
-            runAction(req, res, now);
-            return;
-        }
-        filterChain.doFilter(req, servletResponse);
+        runAction(req, res, now);
         logger.ignored(req, elapsed(now));
     }
 
@@ -134,18 +121,20 @@ public class DispatcherFilter implements javax.servlet.Filter {
             }
         }
         Renderer renderer = rendererPerMediaType.get(dispatcherResult.getMediaType());
-        renderer.render(getRendererContext(request,response,dispatcherResult));
+        renderer.render(getRendererContext(request, response, dispatcherResult));
     }
 
     private DispatcherContext getDispatcherContext(HttpServletRequest request) {
         TreeMap requestParameters = new TreeMap(request.getParameterMap());
-        Map headerParameters = new TreeMap();
+        TreeMap headerParameters = new TreeMap();
         for (Enumeration enumeration = request.getHeaderNames(); enumeration.hasMoreElements(); ) {
             Object key = enumeration.nextElement();
             headerParameters.put(key, request.getHeader(key.toString()));
         }
-
-        return new DispatcherContext(getUri(request), requestParameters, headerParameters);
+        Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters = new HashMap<Class<? extends Annotation>, TreeMap<String, Object>>();
+        parameters.put(QueryParam.class, requestParameters);
+        parameters.put(HeaderParam.class, headerParameters);
+        return new DispatcherContext(getUri(request), parameters);
     }
 
     private RendererContext getRendererContext(HttpServletRequest request, HttpServletResponse response, DispatcherResult result) throws IOException {

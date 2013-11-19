@@ -20,15 +20,18 @@ package risible.core.dispatch;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import risible.core.annotations.Produces;
 import risible.core.MediaType;
+import risible.core.annotations.Produces;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 public class Invocation {
+    public static final String PATH_SEPARATOR = "/";
+    private static TreeMap<String, InvocationCache> cache = new TreeMap<String, InvocationCache>();
     private Class targetClass;
     private String methodName;
     private Method actionMethod;
@@ -48,43 +51,55 @@ public class Invocation {
         this.pathParameters = pathParameters;
     }
 
-    public static Invocation create(String controllerPackage, String[] path) throws InvocationFailed {
-        String extension = removeExtension(path);
+    public static Invocation create(String controllerPackage, String path) throws InvocationFailed {
+        String[] pathParts = path.split(PATH_SEPARATOR);
+        String extension = removeExtension(pathParts);
         Class targetClass = null;
         Method actionMethod;
         String methodName;
         String[] pathParameters;
-        int i = 0;
-        for (; i < path.length; i++) {
-            try {
-                String c = controllerPackage;
-                if (i > 0) {
-                    String[] subPath = (String[]) ArrayUtils.subarray(path, 0, i);
-                    subPath[i - 1] = StringUtils.capitalize(subPath[i - 1]);
-                    for (String aSubPath : subPath) {
-                        c += "." + aSubPath;
-                    }
-                }
-                targetClass = Class.forName(c);
+        String invocationPath = null;
+        InvocationCache invocationCache = null;
+        for (String invocationPathKey : cache.keySet()) {
+            if ((PATH_SEPARATOR + path).startsWith(invocationPathKey)) {
+                invocationPath = invocationPathKey;
+                invocationCache = cache.get(invocationPathKey);
                 break;
-            } catch (ClassNotFoundException e) { // try again
             }
         }
-        if (targetClass == null) {
-            throw new NotFound("No class found for invocation " + Arrays.asList(path));
+        if (invocationCache == null) {
+            int i = 0;
+            for (; i < pathParts.length; i++) {
+                try {
+                    String c = controllerPackage;
+                    if (i > 0) {
+                        String[] subPath = (String[]) ArrayUtils.subarray(pathParts, 0, i);
+                        subPath[i - 1] = StringUtils.capitalize(subPath[i - 1]);
+                        for (String aSubPath : subPath) {
+                            c += "." + aSubPath;
+                        }
+                    }
+                    targetClass = Class.forName(c);
+                    break;
+                } catch (ClassNotFoundException e) { // try again
+                }
+            }
+            if (targetClass == null) {
+                throw new NotFound("No class found for invocation " + Arrays.asList(pathParts));
+            }
+            methodName = pathParts[i];
+            actionMethod = findMethod(targetClass, methodName);
+            invocationPath = buildInvocationPath(pathParts, i + 1);
+            invocationCache = new InvocationCache(targetClass, actionMethod);
+            cache.put(invocationPath, invocationCache);
         }
-        methodName = path[i];
-        String invocationPath = buildInvocationPath(path, i + 1);
-        i++;
-        List pathParameterList = new ArrayList(path.length - i);
-        for (; i < path.length; i++) {
-            pathParameterList.add(path[i]);
+        int i = invocationPath.split(PATH_SEPARATOR).length - 1;
+        List pathParameterList = new ArrayList(pathParts.length - i);
+        for (; i < pathParts.length; i++) {
+            pathParameterList.add(pathParts[i]);
         }
         pathParameters = (String[]) pathParameterList.toArray(new String[pathParameterList.size()]);
-
-        actionMethod = findMethod(targetClass, methodName);
-
-        return new Invocation(targetClass, actionMethod, pathParameters, invocationPath, extension);
+        return new Invocation(invocationCache.targetClass, invocationCache.actionMethod, pathParameters, invocationPath, extension);
     }
 
     private static String removeExtension(String[] path) {
@@ -156,5 +171,15 @@ public class Invocation {
             }
         }
         return MediaType.TEXT_HTML_TYPE;
+    }
+
+    private static class InvocationCache {
+        Class targetClass = null;
+        Method actionMethod;
+
+        private InvocationCache(Class targetClass, Method actionMethod) {
+            this.targetClass = targetClass;
+            this.actionMethod = actionMethod;
+        }
     }
 }

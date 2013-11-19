@@ -34,7 +34,7 @@ public class ExtensionDispatchingStrategy implements DispatchingStrategy {
             return false;
         }
         for (String extension : allowedExtensions) {
-            if (servletPath.endsWith(extension)) {
+            if (servletPath.contains(extension)) {
                 return true;
             }
         }

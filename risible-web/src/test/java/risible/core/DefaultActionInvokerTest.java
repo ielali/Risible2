@@ -19,27 +19,34 @@
 package risible.core;
 
 import junit.framework.TestCase;
+import risible.core.annotations.HeaderParam;
+import risible.core.annotations.QueryParam;
 import risible.core.dispatch.DataBindingActionInvoker;
 import risible.core.dispatch.Invocation;
 import risible.core.dispatch.InvocationFailed;
 import risible.core.foo.ControllerForTesting;
 
+import java.lang.annotation.Annotation;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class DefaultActionInvokerTest extends TestCase {
 
     public void testInvokerSetsParametersAndInvokesMethod() throws IllegalAccessException, InvocationFailed {
         DataBindingActionInvoker invoker = new DataBindingActionInvoker();
         invoker.setTypeConverter(new TypeConverter());
-        Map params = new HashMap();
-        Map headerParams = new HashMap();
+        TreeMap<String, Object> params = new TreeMap<String, Object>();
+        TreeMap<String, Object> headerParams = new TreeMap<String, Object>();
         params.put("doitDate", new String[]{"12-Mar-2004"});
         headerParams.put("myHeader", new String[]{"12"});
         ControllerForTesting controller = new ControllerForTesting();
         Invocation i = new Invocation(ControllerForTesting.class, ControllerForTesting.DOIT_METHOD, new String[0], null, "");
-        invoker.invoke(controller, i, params,headerParams);
+        Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters = new HashMap<Class<? extends Annotation>, TreeMap<String, Object>>();
+        parameters.put(QueryParam.class, params);
+        parameters.put(HeaderParam.class, headerParams);
+        invoker.invoke(controller, i, parameters);
 
         assertTrue(controller.wasDoitInvoked());
         assertEquals(new GregorianCalendar(2004, 2, 12).getTime(), controller.getDoitDate());

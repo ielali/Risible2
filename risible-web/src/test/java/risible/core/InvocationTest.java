@@ -26,7 +26,7 @@ import risible.core.foo.ControllerForTesting;
 public class InvocationTest extends TestCase {
 
     public void testInvocationDeterminesExtension() throws InvocationFailed {
-        Invocation i = Invocation.create("risible.core.foo", new String[]{"controllerForTesting", "doitAgain", "99.png"});
+        Invocation i = Invocation.create("risible.core.foo", "controllerForTesting/doitAgain/99.png");
         assertEquals("png", i.getExtension());
         assertEquals("/controllerForTesting/doitAgain", i.getInvocationPath());
         assertEquals(1, i.getPathParameters().length);

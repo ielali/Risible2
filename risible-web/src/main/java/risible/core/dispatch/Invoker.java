@@ -18,8 +18,11 @@
 
 package risible.core.dispatch;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.TreeMap;
 
 public interface Invoker {
-    Object invoke(Object controller, Invocation invocation, Map requestParameters,Map headerParameters) throws IllegalAccessException, InvocationFailed;
+
+    Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed;
 }

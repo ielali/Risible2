@@ -43,12 +43,15 @@
                 <ref bean="jsonRenderer"/>
             </list>
         </property>
-        <property name="extensions">
+    </bean>
+
+    <bean id="compositeDispatcherFilter" class="risible.core.dispatch.CompositeDispatcherFilter">
+        <property name="filters">
             <list>
-                <value>.html</value>
-                <value>.ajax</value>
+                <bean class="org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter"/>
+                <bean class="org.sitemesh.config.ConfigurableSiteMeshFilter"/>
+                <ref bean="dispatcherFilter"/>
             </list>
         </property>
-
     </bean>
 </beans>

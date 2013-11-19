@@ -31,14 +31,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class DataBindingActionInvoker implements Invoker {
     private risible.core.TypeConverter typeConverter;
 
-    public Object invoke(Object controller, Invocation invocation, Map requestParameters, Map headerParameters) throws IllegalAccessException, InvocationFailed {
-        dataBindControllerFields(controller, invocation, requestParameters, headerParameters);
-        Object[] args = dataBindMethodParams(invocation, requestParameters, headerParameters);
+    @Override
+    public Object invoke(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) throws IllegalAccessException, InvocationFailed {
+        dataBindControllerFields(controller, invocation, parameters);
+        Object[] args = dataBindMethodParams(invocation, parameters);
         try {
             return invocation.getActionMethod().invoke(controller, args);
         } catch (InvocationTargetException e) {
@@ -46,7 +48,8 @@ public class DataBindingActionInvoker implements Invoker {
         }
     }
 
-    protected void dataBindControllerFields(Object controller, Invocation invocation, Map requestParameters, Map headerParameters) {
+
+    protected void dataBindControllerFields(Object controller, Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) {
         String[] pathParameters = invocation.getPathParameters();
         for (Field field : controller.getClass().getDeclaredFields()) {
             PathParam pathParam = field.getAnnotation(PathParam.class);
@@ -57,11 +60,13 @@ public class DataBindingActionInvoker implements Invoker {
                 }
             }
             HeaderParam headerParam = field.getAnnotation(HeaderParam.class);
+            TreeMap<String, Object> headerParameters = parameters.get(HeaderParam.class);
             if (headerParam != null) {
                 String headerParamName = StringUtils.isNotBlank(headerParam.value()) ? headerParam.value() : field.getName();
                 populate(controller, field.getName(), headerParameters.get(headerParamName));
             }
             QueryParam queryParam = field.getAnnotation(QueryParam.class);
+            TreeMap requestParameters = parameters.get(QueryParam.class);
             if (queryParam != null) {
                 String requestParamName = StringUtils.isNotBlank(queryParam.value()) ? queryParam.value() : field.getName();
                 if (requestParamName != null && requestParamName.trim() != "") {
@@ -80,7 +85,7 @@ public class DataBindingActionInvoker implements Invoker {
         }
     }
 
-    private Object[] dataBindMethodParams(Invocation invocation, Map requestParameters, Map headerParameters) {
+    private Object[] dataBindMethodParams(Invocation invocation, Map<Class<? extends Annotation>, TreeMap<String, Object>> parameters) {
         Class[] types = invocation.getActionMethod().getParameterTypes();
         Object[] result = new Object[types.length];
         if (types.length > 0) {
@@ -95,6 +100,7 @@ public class DataBindingActionInvoker implements Invoker {
                     }
                 }
                 HeaderParam headerParam = ClassUtils.getAnnotation(paramAnnotations[i], HeaderParam.class);
+                Map<String, Object> headerParameters = parameters.get(HeaderParam.class);
                 if (headerParam != null) {
                     String headerParamName = headerParam.value();
                     if (StringUtils.isNotBlank(headerParamName)) {
@@ -102,6 +108,7 @@ public class DataBindingActionInvoker implements Invoker {
                     }
                 }
                 QueryParam queryParam = ClassUtils.getAnnotation(paramAnnotations[i], QueryParam.class);
+                TreeMap requestParameters = parameters.get(QueryParam.class);
                 if (queryParam != null) {
                     String requestParamName = queryParam.value();
                     if (requestParamName != null && requestParamName.trim() != "") {

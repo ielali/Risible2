@@ -19,6 +19,7 @@ import java.util.Map;
  * Date: 06/11/13
  * Time: 21:54
  */
+
 public class Dispatcher implements ApplicationContextAware {
     private final Logger log = Logger.getLogger(Dispatcher.class);
     private ConfigurableListableBeanFactory beanFactory;
@@ -56,7 +57,7 @@ public class Dispatcher implements ApplicationContextAware {
             Invoker invoker = getInvoker(action);
             actionName = action.getName();
             mediaType = invocation.getMediaType();
-            result = invoker.invoke(controller, invocation, context.getRequestPrameters(), context.getHeaderPrameters());
+            result = invoker.invoke(controller, invocation, context.getParameters());
         } catch (Throwable e) {
             throwable = e;
         }
@@ -65,8 +66,7 @@ public class Dispatcher implements ApplicationContextAware {
     }
 
     private Invocation createInvocation(DispatcherContext context) throws InvocationFailed {
-        String[] path = context.getUri().split("\\/");
-        return Invocation.create(actionPackage, path);
+        return Invocation.create(actionPackage, context.getUri());
     }
 
     private Object createController(Invocation invocation) {

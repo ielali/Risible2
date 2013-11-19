@@ -1,4 +1,4 @@
 <sitemesh>
-    <mapping path="*.html" decorator="/decorators/main.ftl"/>
+    <mapping path="*" decorator="/decorators/main.ftl"/>
     <mapping path="*.ajax" exclue="true"/>
 </sitemesh>

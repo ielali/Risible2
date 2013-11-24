@@ -32,6 +32,8 @@ import risible.core.render.RendererContext;
 import risible.freemarker.CookieManager;
 import risible.servlet.SessionMap;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,9 +43,11 @@ import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
+@Named("dispatcherFilter")
 public class DispatcherFilter implements javax.servlet.Filter {
     public static final String REDIRECT_RESULT_PREFIX = "redirect";
     private final Logger log = Logger.getLogger(DispatcherFilter.class);
+    @Inject
     private Dispatcher dispatcher;
     private RequestLogger logger = new Log4jRequestLogger();
     private Map<MediaType, Renderer> rendererPerMediaType = new Hashtable<MediaType, Renderer>();
@@ -55,6 +59,7 @@ public class DispatcherFilter implements javax.servlet.Filter {
         this.dispatcher = dispatcher;
     }
 
+    @Inject
     public void setRenderers(List<Renderer> renderers) {
         if (renderers != null) {
             for (Renderer renderer : renderers) {

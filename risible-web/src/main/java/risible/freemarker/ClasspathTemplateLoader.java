@@ -20,12 +20,14 @@ package risible.freemarker;
 
 import freemarker.cache.TemplateLoader;
 
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
 
+@Named("templateLoader")
 public class ClasspathTemplateLoader implements TemplateLoader {
     public Object findTemplateSource(String name) {
         URL url = getClass().getResource("/" + name);

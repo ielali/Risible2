@@ -4,6 +4,7 @@ import risible.demo.app.dao.Repository;
 import risible.demo.app.domain.DomainObject;
 
 import javax.annotation.Resource;
+import javax.inject.Named;
 import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.util.Map;
@@ -17,6 +18,7 @@ import static risible.util.ClassUtils.getParameterizedTypes;
  * Time: 1:07 PM
  * To change this template use File | Settings | File Templates.
  */
+@Named
 public class TypeConverter extends risible.core.TypeConverter {
     @Resource
     Repository repository;

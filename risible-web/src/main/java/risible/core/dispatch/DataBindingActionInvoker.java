@@ -26,13 +26,16 @@ import risible.core.annotations.PathParam;
 import risible.core.annotations.QueryParam;
 import risible.util.ClassUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-
+@Named("defaultActionInvoker")
 public class DataBindingActionInvoker implements Invoker {
+    @Inject
     private risible.core.TypeConverter typeConverter;
 
     @Override

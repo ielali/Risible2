@@ -1,5 +1,6 @@
 package risible.core.dispatch;
 
+import javax.inject.Inject;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -14,11 +15,17 @@ import java.util.List;
  */
 public class CompositeDispatcherFilter implements javax.servlet.Filter {
     private DispatchingStrategy dispatchingStrategy = new NoDotDispatchingStrategy();
+    @Inject
+    private DispatcherFilter dispatcherFilter;
+    private List<Filter> filters = new ArrayList<Filter>();
 
-    private List<? extends Filter> filters = new ArrayList<Filter>();
+    public void setDispatcherFilter(DispatcherFilter dispatcherFilter) {
+        this.dispatcherFilter = dispatcherFilter;
+    }
 
-    public void setFilters(List<? extends Filter> filters) {
+    public void setFilters(List<Filter> filters) {
         this.filters = new ArrayList<Filter>(filters);
+        this.filters.add(dispatcherFilter);
     }
 
     /**

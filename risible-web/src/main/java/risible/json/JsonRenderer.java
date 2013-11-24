@@ -9,6 +9,8 @@ import risible.core.annotations.Renders;
 import risible.core.render.Renderer;
 import risible.core.render.RendererContext;
 
+import javax.inject.Named;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Imad
@@ -16,6 +18,7 @@ import risible.core.render.RendererContext;
  * Time: 4:43 PM
  * To change this template use File | Settings | File Templates.
  */
+@Named("jsonRenderer")
 @Renders(MediaType.APPLICATION_JSON)
 public class JsonRenderer implements Renderer, InitializingBean {
     private final Logger log = Logger.getLogger(JsonRenderer.class);

@@ -28,16 +28,20 @@ import risible.core.render.Renderer;
 import risible.core.render.RendererContext;
 import risible.core.render.ResultTemplateNameGenerator;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.Writer;
 
+@Named("freemarkerRenderer")
 @Renders(MediaType.TEXT_HTML)
 public class FreemarkerRenderer implements Renderer {
     private static final Logger log = Logger.getLogger(FreemarkerRenderer.class);
 
     private Configuration configuration;
 
+    @Inject
     public void setFreemarkerConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }

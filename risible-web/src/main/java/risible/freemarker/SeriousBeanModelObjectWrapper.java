@@ -22,6 +22,9 @@ import freemarker.ext.beans.BeanModel;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateModel;
 
+import javax.inject.Named;
+
+@Named("seriousBeanModelObjectWrapper")
 public class SeriousBeanModelObjectWrapper extends DefaultObjectWrapper {
     protected TemplateModel handleUnknownType(Object obj) {
         return new BeanModel(obj, this);

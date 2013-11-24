@@ -3,54 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-    <bean id="freemarkerConfiguration" class="freemarker.template.Configuration" scope="prototype">
-        <property name="templateLoader">
-            <bean class="risible.freemarker.ClasspathTemplateLoader"/>
-        </property>
-        <property name="tagSyntax" value="2"/>
-        <property name="defaultEncoding" value="UTF-8"/>
-        <property name="ObjectWrapper">
-            <bean class="risible.freemarker.SeriousBeanModelObjectWrapper"/>
-        </property>
+
+    <bean id="risibleConfiguration" class="risible.core.Configuration">
+        <property name="controllerPackageName" value="risible.demo.app.controller"/>
     </bean>
 
-    <bean id="freemarkerRenderer" class="risible.freemarker.FreemarkerRenderer">
-        <property name="freemarkerConfiguration" ref="freemarkerConfiguration"/>
-    </bean>
-
-    <bean id="jsonRenderer" class="risible.json.JsonRenderer"/>
-
-    <bean id="typeConverter" class="risible.demo.app.TypeConverter"/>
-
-    <bean id="defaultActionInvoker" class="risible.core.dispatch.DataBindingActionInvoker">
-        <property name="typeConverter" ref="typeConverter"/>
-    </bean>
-
-    <bean id="dispatcher" class="risible.core.dispatch.Dispatcher">
-        <property name="actionPackage" value="risible.demo.app.controller"/>
-        <property name="actionInvokers">
-            <map>
-                <entry key="default" value-ref="defaultActionInvoker"/>
-            </map>
-        </property>
-    </bean>
-
-    <bean id="dispatcherFilter" class="risible.core.dispatch.DispatcherFilter">
-        <property name="dispatcher" ref="dispatcher"/>
-        <property name="renderers">
-            <list>
-                <ref bean="freemarkerRenderer"/>
-                <ref bean="jsonRenderer"/>
-            </list>
-        </property>
-    </bean>
 
     <bean id="compositeDispatcherFilter" class="risible.core.dispatch.CompositeDispatcherFilter">
         <property name="filters">
             <list>
                 <bean class="org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter"/>
                 <bean class="org.sitemesh.config.ConfigurableSiteMeshFilter"/>
-                <ref bean="dispatcherFilter"/>
             </list>
         </property>
     </bean>

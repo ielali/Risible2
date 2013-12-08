@@ -19,7 +19,7 @@
                 <form id="newUserFrom" class="bs-example form-horizontal" action="addUser.ajax" method="post">
                     <fieldset>
                         <legend>New</legend>
-                        <input type="hidden" name="user" value="${users?size}">
+                        <input type="hidden" name="user" value="${users?size}" id="usersCountForm">
                         <div class="form-group">
                             <div class="col-lg-10">
                                 <input type="text" class="form-control" id="inputFirstName" placeholder="First Name"
@@ -52,6 +52,7 @@
             data: frm.serialize(),
             success: function (data) {
                 $('#usersDiv').html(data);
+                $("#usersCountForm").val($("#usersCount").val());
             }
         });
     });

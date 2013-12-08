@@ -1,3 +1,4 @@
+<input type="hidden" id="usersCount"  value="${users?size}"/>
 <table class="table table-striped table-bordered table-hover ">
     <thead>
     <tr>
